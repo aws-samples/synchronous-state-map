@@ -1,0 +1,137 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "CalculateRestartPlan",
+  "States": {
+    "CalculateRestartPlan": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:${account_id}:function:calculate_restart_plan_${environment}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Instances in Queue?"
+    },
+    "Instances in Queue?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.QueueCount",
+          "NumericEquals": 0,
+          "Next": "More Instances in Queue?"
+        }
+      ],
+      "Default": "RunSSMCommand"
+    },
+    "RunSSMCommand": {
+      "Type": "Map",
+      "Iterator": {
+        "StartAt": "StartAutomationExecution",
+        "States": {
+          "StartAutomationExecution": {
+            "Type": "Task",
+            "Parameters": {
+              "DocumentName": "${application_name}RestartRunCommand-${environment}",
+              "Parameters": {
+                "InstanceIds.$": "States.Array($.InstanceId)",
+                "taskToken.$": "States.Array($$.Task.Token)",
+                "workingDirectory": [
+                  "/efare1/aws_admin"
+                ],
+                "Commands": [
+                  "echo 'Performed the echo command in lieu of a service restart'"
+                ]
+              }
+            },
+            "TimeoutSeconds": 180,
+            "Resource": "arn:aws:states:::aws-sdk:ssm:startAutomationExecution.waitForTaskToken",
+            "ResultPath": "$.output",
+            "Next": "Success",
+            "Retry": [ {
+              "ErrorEquals": ["TaskFailed", "Ssm.SsmException"],
+              "IntervalSeconds": 5,
+              "MaxAttempts": 2,
+              "BackoffRate": 2.0
+            } ],
+            "Catch": [
+              {
+                "ErrorEquals": [
+                  "States.Timeout",
+                  "States.TaskFailed", 
+                  "Ssm.SsmException"
+                ],
+                "Next": "Failure",
+                "ResultPath": "$.ErrorInformation"
+              }
+            ]
+          },
+          "Success": {
+            "Type": "Pass",
+            "End": true,
+            "Result": {
+              "Status": "Success"
+            },
+            "ResultPath": "$.Details"
+          },
+          "Failure": {
+            "Type": "Pass",
+            "End": true,
+            "Result": {
+              "Status": "Failed"
+            },
+            "ResultPath": "$.Details"
+          }
+        }
+      },
+      "ItemsPath": "$.Targets[0].Values",
+      "Parameters": {
+        "InstanceId.$": "$$.Map.Item.Value"
+      },
+      "Next": "More Instances in Queue?",
+      "ResultPath": "$.MapResult"
+    },
+    "More Instances in Queue?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.QueueCount",
+          "NumericEquals": 0,
+          "Next": "End State Machine"
+        }
+      ],
+      "Default": "CalculateRestartPlan"
+    },
+    "End State Machine": {
+      "Type": "Pass",
+      "Parameters": {
+        "ExecutionReport": {
+          "AutoScalingGroupName.$": "$.AutoScalingGroupName",
+          "CompletedInstances.$": "$.CompletedInstances",
+          "FailedInstances.$": "$.FailedInstances"
+        }
+      },
+      "Next": "SNS Report"
+    },
+    "SNS Report": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "arn:aws:sns:us-east-1:${account_id}:${application_name}-Restart-Message-${environment}"
+      },
+      "End": true
+    }
+  }
+}
