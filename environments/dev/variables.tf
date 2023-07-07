@@ -1,14 +1,14 @@
 variable "environment" {
-  type = string
+  type        = string
   description = "The environment being deployed against"
 }
 
 variable "application_name" {
-  type = string
+  type        = string
   description = "The environment being deployed against"
 }
 
 variable "owner_email" {
-  type = string
+  type        = string
   description = "Email for SNS notifications"
 }
