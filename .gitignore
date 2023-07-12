@@ -1,3 +1,5 @@
 .vscode/**
 **.pyc
 **.DS_Store
+./environments/dev/.terraform
+./environments/dev/.terraform.lock.hcl

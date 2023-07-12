@@ -3,11 +3,11 @@ output "operations_role_name" {
 }
 
 output "eventbridge_lambda_role_name" {
-  value = aws_iam_role.event_bridge_lambda.name
+  value = aws_iam_role.eventbridge_lambda.name
 }
 
 output "eventbridge_stepfunction_role_name" {
-  value = aws_iam_role.event_bridge_stepfunction.name
+  value = aws_iam_role.eventbridge_stepfunction.name
 }
 
 output "lambda_execution_role_name" {

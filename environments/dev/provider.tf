@@ -17,7 +17,5 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
-  assume_role {
-    role_arn = "arn:aws:iam::0123456789:role/CloudFormationAdminRole"
-  }
+  profile = "default"
 }

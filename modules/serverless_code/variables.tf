@@ -1,11 +1,11 @@
-variable "sns_email" {
-  type        = string
-  description = "The SSN Notification email"
-}
-
 variable "rebuild_version" {}
 
 variable "environment" {
+  type        = string
+  description = "The environment being deployed against"
+}
+
+variable "application_name" {
   type        = string
   description = "The environment being deployed against"
 }
@@ -35,3 +35,8 @@ variable "stepfunction_role" {
   description = "The name of the StepFunction Role"
 }
 
+
+variable "sns_email" {
+  type        = string
+  description = "The SSN Notification email"
+}

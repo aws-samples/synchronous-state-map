@@ -5,7 +5,6 @@ module "stack" {
 }
 
 resource "aws_cloudformation_stack" "this" {
-  provider = aws.ssm-automation
   capabilities = [
     "CAPABILITY_AUTO_EXPAND",
     "CAPABILITY_IAM",

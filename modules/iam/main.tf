@@ -17,7 +17,7 @@ resource "aws_iam_role" "operations" {
 resource "aws_iam_role" "eventbridge_lambda" {
   name               = "${local.application_name}-EventBridge-Lambda-Role"
   path               = "/"
-  assume_role_policy = data.aws_iam_policy_document.eventbridge_lambda_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.eventbridge_assume_role.json
   inline_policy {
     name   = "${local.application_name}-EventBridge-Lambda-Role"
     policy = data.aws_iam_policy_document.eventbridge_lambda_inline.json
