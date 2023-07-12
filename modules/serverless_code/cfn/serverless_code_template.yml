@@ -25,11 +25,6 @@ Parameters:
   StepFunctionRole:
     Type: String
     Description: The name of the StepFunction Role
-#Transform required for AWS AMS
-Transform:
-  Name: AmsStackTransform
-  Parameters:
-    StackId: !Ref "AWS::StackId"
 Resources:
   #Creates EventBus for restart events
   EventBus:

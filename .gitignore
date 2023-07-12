@@ -1,5 +1,8 @@
 .vscode/**
 **.pyc
 **.DS_Store
-./environments/dev/.terraform
-./environments/dev/.terraform.lock.hcl
+environments/dev/.terraform
+environments/dev/.terraform.lock.hcl
+environments/dev/terraform.tfstate*
+modules/code_s3_objects/calculate-restart-plan.zip
+modules/code_s3_objects/event-publisher.zip

@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "this" {
-  bucket_prefix = "custom_app_one_${var.environment}"
+  bucket_prefix = lower("${var.application_name}-${var.environment}")
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
