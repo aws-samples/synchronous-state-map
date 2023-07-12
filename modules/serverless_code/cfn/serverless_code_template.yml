@@ -31,25 +31,13 @@ Transform:
   Parameters:
     StackId: !Ref "AWS::StackId"
 Resources:
-  #CRON job rule for nightly restarts of instances
-  ScheduledRule:
-    Type: AWS::Events::Rule
-    Properties:
-      Name: !Sub "${ApplicationName}-NightlyEvent-${Environment}"
-      Description: !Sub "ScheduledRule-${Environment}"
-      ScheduleExpression: "cron(30 23 * * ? *)"
-      Targets:
-        - Arn: !GetAtt EventPublisherLamdba.Arn
-          Id: target
-      RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/${EventBridgeLambdaRole}"
-
   #Creates EventBus for restart events
   EventBus:
     Type: AWS::Events::EventBus
     Properties:
       Name: !Sub "${ApplicationName}EventBus-${Environment}"
 
-  #Create an event rule for external initiation
+  #Create an event rule for external initiation against all Autoscaling groups
   ExternalEventRule:
     Type: AWS::Events::Rule
     Properties:

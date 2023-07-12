@@ -41,7 +41,6 @@ def initialPlan(event):
   
   logger.info(f"describe_auto_scaling_groups : {response}")
   event['AllInstances'] = response['AutoScalingGroups'][0]['Instances']
-  event['ApplicationRegion'] = getAppRegion(response['AutoScalingGroups'][0])
   remaining_instances = []
 
   for instance in event['AllInstances']:
@@ -56,7 +55,6 @@ def initialPlan(event):
   output_event['QueuedInstances'] = queued_instances
   output_event['QueueCount'] = len(queued_instances)
   output_event['AutoScalingGroupName'] = asg_name
-  output_event['ApplicationRegion'] = event['ApplicationRegion']
   output_event['CompletedInstances'] = []
   output_event['FailedInstances'] = []
   logger.info(f"output_event : {output_event}")
@@ -90,67 +88,59 @@ def subsequentPlan(last_event):
   logger.info(f"output_event : {output_event}")
   return output_event
 
-def getAppRegion(asg_response):
-  tags = asg_response['Tags']
-  for tag in tags:
-    key = tag['Key']
-    if key == 'tvpt:application-region':
-      return tag['Value']
-  return ""
-
 def setQueuedInstances(count, remaining_instances):
   return remaining_instances[0:count]
 
 def determineCount(event):
-  count = 0
-  if 'QueueCount' in event:#Subsequent time through, count already stored in the event
-     count = event['QueueCount']
-  else:#First time through
-    count = math.ceil(len(event['AllInstances']) / NUM_OF_ITERATIONS)#Otherwise aim to restart 20% at a time
+  count = math.ceil(len(event['AllInstances']) / NUM_OF_ITERATIONS)#Otherwise aim to restart 20% at a time
   logger.info(f"Planned Count : {count}")
 
   #Adjust the planned count based on Utilization
   metric = getUtilizationMetric(event)
   logger.info(f"Utilization Metric: {metric}")
-  if metric > 60:#If the metric utilization is high, slow down the restarts
+  if metric > 60:#If the metric utilization is high, slow down the command invocations by 20%
     count = round(count * .8)
   logger.info(f"Count Adjusted based on Utilization: {count}")
   return count
 
 def getUtilizationMetric(event):
+  #Disabled as your customer metric would be a custom metric, instead returns a value of 'zero'
   if 'ApplicationRegion' not in event:
     return 0
-  now = datetime.datetime.now()
-  start_time = roundTime(now - datetime.timedelta(minutes=5))
-  end_time = roundTime(now)
-  cloudwatch_client = boto3.client('cloudwatch')
-  utilization = 0
-  logger.info(f"Updated event: {event}")
-  logger.info(f"Start time: {start_time}")
-  logger.info(f"End time: {end_time}")
-  metric = cloudwatch_client.get_metric_data(
-    MetricDataQueries=[
-      {
-        "Expression": f'SELECT AVG(Utilization) FROM "Search/{event["ApplicationRegion"]}"',
-        "Id": "q1",
-        "Period": 300,
-        "Label": "weight"
-      }
-    ],
-    StartTime=start_time,
-    EndTime=end_time
-  )
-  logger.info(f"Utilization Response: {metric}")
-  response_array = metric['MetricDataResults']
-  if len(response_array) != 0:
-    utilization = response_array[0]['Values'][0]
-    logger.info(f"Utilization in response: {utilization}")
-  return utilization
+  # now = datetime.datetime.now()
+  # start_time = roundTime(now - datetime.timedelta(minutes=5))
+  # end_time = roundTime(now)
+  # cloudwatch_client = boto3.client('cloudwatch')
+  # utilization = 0
+  # logger.info(f"Updated event: {event}")
+  # logger.info(f"Start time: {start_time}")
+  # logger.info(f"End time: {end_time}")
+  # namespace = ''
+  # metric_name = ''
+  # metric = cloudwatch_client.get_metric_data(
+  #   MetricDataQueries=[
+  #     {
+  #       "Expression": f'SELECT AVG(Utilization) FROM "{namespace}/{metric_name}}"',
+  #       "Id": "q1",
+  #       "Period": 300,
+  #       "Label": "weight"
+  #     }
+  #   ],
+  #   StartTime=start_time,
+  #   EndTime=end_time
+  # )
+  # logger.info(f"Utilization Response: {metric}")
+  # response_array = metric['MetricDataResults']
+  # if len(response_array) != 0:
+  #   utilization = response_array[0]['Values'][0]
+  #   logger.info(f"Utilization in response: {utilization}")
+  # return utilization
 
-def roundTime(dt=None, dateDelta=datetime.timedelta(minutes=5)):
-  roundTo = dateDelta.total_seconds()
-  if dt == None : dt = datetime.datetime.now()
-  seconds = (dt - dt.min).seconds
-  # // is a floor division, not a comment on following line:
-  rounding = (seconds+roundTo/2) // roundTo * roundTo
-  return (dt + datetime.timedelta(0,rounding-seconds,-dt.microsecond)).timestamp()
+# def roundTime(dt=None, dateDelta=datetime.timedelta(minutes=5)):
+#   #Used to format the start time and end time period for the CloduWatch metric we are interested in to be the past 5 minutes
+#   roundTo = dateDelta.total_seconds()
+#   if dt == None : dt = datetime.datetime.now()
+#   seconds = (dt - dt.min).seconds
+#   # // is a floor division, not a comment on following line:
+#   rounding = (seconds+roundTo/2) // roundTo * roundTo
+#   return (dt + datetime.timedelta(0,rounding-seconds,-dt.microsecond)).timestamp()

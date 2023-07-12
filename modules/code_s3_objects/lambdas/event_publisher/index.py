@@ -24,19 +24,20 @@ eb_client = boto3.client('events')
 
 def lambda_handler(event, context=None):
   env = os.environ['Environment']
-  asg_tag_values = [
-    f'{env}xpm0',
-    f'{env}xpm1',
-    f'{env}xpm2',
-    f'{env}xpm3'
-    ]
+  #Disabled tag filtering, instead finds all AutoscalingGroups in the account, for test only.
+  # asg_tag_values = [
+  #   f'dev',
+  #   f'{env}xpm1',
+  #   f'{env}xpm2',
+  #   f'{env}xpm3'
+  #   ]
   response = asg_client.describe_auto_scaling_groups(
-    Filters=[
-        {
-            'Name': 'tag:tvpt:application-region',
-            'Values': asg_tag_values
-        }
-    ]
+    # Filters=[
+    #     {
+    #         'Name': 'Environment',
+    #         'Values': asg_tag_values
+    #     }
+    # ]
   )
   logger.info(f"describe_auto_scaling_groups: {response}")
   parallel_processes = response['AutoScalingGroups']
