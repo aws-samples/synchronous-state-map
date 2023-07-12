@@ -30,7 +30,7 @@ Resources:
   EventBus:
     Type: AWS::Events::EventBus
     Properties:
-      Name: !Sub "${ApplicationName}EventBus-${Environment}"
+      Name: !Sub "${ApplicationName}-EventBus-${Environment}"
 
   #Create an event rule for external initiation against all Autoscaling groups
   ExternalEventRule:
@@ -97,7 +97,7 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceAccount: !Ref "AWS::AccountId"
-      SourceArn: !GetAtt ScheduledRule.Arn
+      # SourceArn: !GetAtt ScheduledRule.Arn
 
   EventPublisherLamdbaVersion:
     Type: AWS::Lambda::Version
