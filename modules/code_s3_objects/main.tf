@@ -32,6 +32,7 @@ resource "aws_s3_bucket_object" "autoscaling_state_machine" {
       "account_id"       = data.aws_caller_identity.current.account_id,
       "environment"      = var.environment,
       "application_name" = var.application_name
+      "region"           = var.region
     }
   )
   source_hash = filemd5("${path.module}/state-machine/autoscaling_state_machine.template")

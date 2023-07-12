@@ -4,9 +4,9 @@ resource "aws_iam_role" "operations" {
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.operations_assume_role.json
   managed_policy_arns = [
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/customer_step_functions_policy",
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/customer_eventbridge_policy",
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/customer_systemsmanager_automation_policy"
+    "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess",
+    "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
   ]
   inline_policy {
     name   = "${local.application_name}-Operations-Invoke-Lambda"
@@ -39,7 +39,7 @@ resource "aws_iam_role" "lambda_execution" {
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
   managed_policy_arns = [
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/AWSLambdaBasicExecutionRole"
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   ]
   inline_policy {
     name   = "${local.application_name}-Lambdas-Execution-Policy"

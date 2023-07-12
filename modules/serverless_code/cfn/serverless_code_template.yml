@@ -152,7 +152,7 @@ Resources:
   SNSTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub "${ApplicationName}-Restart-Message-${Environment}"
+      TopicName: !Sub "${ApplicationName}-SNS-${Environment}"
       Subscription:
         - Endpoint: !Ref SnsEmail
           Protocol: "email"

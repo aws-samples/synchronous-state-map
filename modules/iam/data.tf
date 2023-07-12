@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "operations_inline" {
     sid     = "OperationsInlinePolicy"
     actions = ["lambda:invokeFunction"]
     resources = [
-      "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function/custom_app_one_event_publisher*"
+      "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function/event_publisher*"
     ]
   }
 }
@@ -49,7 +49,7 @@ data "aws_iam_policy_document" "eventbridge_lambda_inline" {
     sid     = "EventBridgeLambdaInlinePolicy"
     actions = ["lambda:invokeFunction"]
     resources = [
-      "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function/custom_app_one_event_publisher_*"
+      "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function/event_publisher_*"
     ]
   }
 }
@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "eventbridge_stepfunction_inline" {
     sid     = "1"
     actions = ["states:StartExecution"]
     resources = [
-      "arn:aws:states:us-east-1:${data.aws_caller_identity.current.account_id}:stateMachine:*"
+      "arn:aws:states:${var.region}:${data.aws_caller_identity.current.account_id}:stateMachine:*"
     ]
   }
   statement {
@@ -87,7 +87,7 @@ data "aws_iam_policy_document" "lambda_execution_inline" {
     sid     = "1"
     actions = ["events:PutEvents"]
     resources = [
-      "arn:aws:events:us-east-1:${data.aws_caller_identity.current.account_id}:event-bus/Custom-App-One-EventBus-*"
+      "arn:aws:events:${var.region}:${data.aws_caller_identity.current.account_id}:event-bus/${var.application_name}-EventBus-*"
     ]
   }
   statement {
@@ -122,8 +122,8 @@ data "aws_iam_policy_document" "systems_manager_inline" {
     sid     = "1"
     actions = ["ssm:SendCommand"]
     resources = [
-      "arn:aws:ec2:us-east-1:${data.aws_caller_identity.current.account_id}:instance/*",
-      "arn:aws:ssm:us-east-1::document/AWS-RunShellScript"
+      "arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/*",
+      "arn:aws:ssm:${var.region}::document/AWS-RunShellScript"
     ]
   }
   statement {
@@ -165,28 +165,28 @@ data "aws_iam_policy_document" "stepfunction_manager_inline" {
     sid     = "1"
     actions = ["lambda:InvokeFunction"]
     resources = [
-      "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:custom_app_one_calculate_restart_plan_*"
+      "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:calculate_restart_plan_*"
     ]
   }
   statement {
     sid     = "2"
     actions = ["sns:Publish"]
     resources = [
-      "arn:aws:sns:us-east-1:${data.aws_caller_identity.current.account_id}:Custom-App-One-Restart-Message-*"
+      "arn:aws:sns:${var.region}:${data.aws_caller_identity.current.account_id}:${var.application_name}-SNS-*"
     ]
   }
   statement {
     sid     = "3"
     actions = ["ssm:StartAutomationExecution"]
     resources = [
-      "arn:aws:ssm:us-east-1:${data.aws_caller_identity.current.account_id}:automation-definition/Custom-App-One-RunCommand-*:*"
+      "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:automation-definition/${var.application_name}-RunCommand-*:*"
     ]
   }
   statement {
     sid     = "4"
     actions = ["logs:CreateLogStream", "logs:PutLogEvents"]
     resources = [
-      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/vendedlogs/states/custom_app_one-restart-Logs:*"
+      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/vendedlogs/states/${var.application_name}-Logs:*"
     ]
   }
   statement {

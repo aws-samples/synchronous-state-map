@@ -8,7 +8,7 @@
       "OutputPath": "$.Payload",
       "Parameters": {
         "Payload.$": "$",
-        "FunctionName": "arn:aws:lambda:us-east-1:${account_id}:function:calculate_restart_plan_${environment}"
+        "FunctionName": "arn:aws:lambda:${region}:${account_id}:function:calculate_restart_plan_${environment}"
       },
       "Retry": [
         {
@@ -129,7 +129,7 @@
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
         "Message.$": "$",
-        "TopicArn": "arn:aws:sns:us-east-1:${account_id}:${application_name}-Restart-Message-${environment}"
+        "TopicArn": "arn:aws:sns:${region}:${account_id}:${application_name}-Restart-Message-${environment}"
       },
       "End": true
     }

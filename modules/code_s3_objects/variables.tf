@@ -5,5 +5,10 @@ variable "environment" {
 
 variable "application_name" {
   type        = string
-  description = "The environment being deployed against"
+  description = "Your custom application name"
+}
+
+variable "region" {
+  type        = string
+  description = "The region to deploy the solution in"
 }

@@ -3,6 +3,7 @@ module "iam" {
   source           = "../../modules/iam"
   environment      = var.environment
   application_name = var.application_name
+  region           = var.region
 }
 
 module "code_s3_objects" {
