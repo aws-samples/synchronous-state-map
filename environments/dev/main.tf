@@ -11,6 +11,7 @@ module "code_s3_objects" {
   source           = "../../modules/code_s3_objects"
   environment      = var.environment
   application_name = var.application_name
+  region           = var.region
 }
 
 module "automation_document" {
