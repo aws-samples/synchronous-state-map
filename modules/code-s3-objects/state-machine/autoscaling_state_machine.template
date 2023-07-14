@@ -48,7 +48,7 @@
                 "InstanceIds.$": "States.Array($.InstanceId)",
                 "taskToken.$": "States.Array($$.Task.Token)",
                 "workingDirectory": [
-                  "/efare1/aws_admin"
+                  "/"
                 ],
                 "Commands": [
                   "echo 'Performed the echo command in lieu of a service restart'"
