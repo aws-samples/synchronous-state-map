@@ -14,7 +14,7 @@ resource "aws_cloudformation_stack" "this" {
   name             = module.stack.id
   parameters = {
     SSMRole     = var.ssm_role
-    DoumentName = local.document_name
+    DocumentName = local.document_name
   }
   template_body = file("${path.module}/cfn/run_command.yml")
   timeouts {}
