@@ -13,9 +13,8 @@ resource "aws_cloudformation_stack" "this" {
   disable_rollback = false
   name             = module.stack.id
   parameters = {
-    Environment     = var.environment
     SSMRole         = var.ssm_role
-    ApplicationName = var.application_name
+    DoumentName     = local.document_name
   }
   template_body = file("${path.module}/cfn/run_command.yml")
   timeouts {}

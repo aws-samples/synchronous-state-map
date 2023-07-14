@@ -43,7 +43,7 @@
           "StartAutomationExecution": {
             "Type": "Task",
             "Parameters": {
-              "DocumentName": "${application_name}RestartRunCommand-${environment}",
+              "DocumentName": "${document_name}",
               "Parameters": {
                 "InstanceIds.$": "States.Array($.InstanceId)",
                 "taskToken.$": "States.Array($$.Task.Token)",
@@ -129,7 +129,7 @@
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
         "Message.$": "$",
-        "TopicArn": "arn:aws:sns:${region}:${account_id}:${application_name}-Restart-Message-${environment}"
+        "TopicArn": "arn:aws:sns:${region}:${account_id}:${application_name}-SNS-${environment}"
       },
       "End": true
     }
