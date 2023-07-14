@@ -8,11 +8,11 @@ module "iam" {
 
 module "code_s3_objects" {
   #Creates an S3 bucket, and places Lambda code and State Machine definitions into S3 for reference
-  source            = "../../modules/code-s3-objects"
-  environment       = var.environment
-  application_name  = var.application_name
-  region            = var.region
-  document_name     = module.automation_document.document_name
+  source           = "../../modules/code-s3-objects"
+  environment      = var.environment
+  application_name = var.application_name
+  region           = var.region
+  document_name    = module.automation_document.document_name
 }
 
 module "automation_document" {
