@@ -8,15 +8,16 @@ module "iam" {
 
 module "code_s3_objects" {
   #Creates an S3 bucket, and places Lambda code and State Machine definitions into S3 for reference
-  source           = "../../modules/code_s3_objects"
-  environment      = var.environment
-  application_name = var.application_name
-  region           = var.region
+  source            = "../../modules/code-s3-objects"
+  environment       = var.environment
+  application_name  = var.application_name
+  region            = var.region
+  document_name     = module.automation_document.document_name
 }
 
 module "automation_document" {
   #Creates a Systems Manager Automation document, for execution against an EC2 instance
-  source           = "../../modules/ssm_automation"
+  source           = "../../modules/ssm-automation"
   rebuild_version  = 1 #Increment to rebuild the CloudFormation stack
   environment      = var.environment
   application_name = var.application_name
@@ -24,7 +25,7 @@ module "automation_document" {
 }
 
 module "serverless_code" {
-  source                         = "../../modules/serverless_code"
+  source                         = "../../modules/serverless-code"
   rebuild_version                = 1 #Increment to rebuild the CloudFormation stack
   sns_email                      = var.owner_email
   environment                    = var.environment
@@ -35,6 +36,4 @@ module "serverless_code" {
   ep_lambda_role                 = module.iam.ep_lambda_execution_role_name
   crp_lambda_role                = module.iam.crp_lambda_execution_role_name
   stepfunction_role              = module.iam.stepfunction_role_name
-
-  depends_on = [module.automation_document, module.code_s3_objects]
 }
