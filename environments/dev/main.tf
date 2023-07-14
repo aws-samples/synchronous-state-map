@@ -32,7 +32,8 @@ module "serverless_code" {
   s3_bucket_name                 = module.code_s3_objects.bucket_id
   event_bridge_lambda_role       = module.iam.eventbridge_lambda_role_name
   event_bridge_stepfunction_role = module.iam.eventbridge_lambda_role_name
-  lambda_role                    = module.iam.lambda_execution_role_name
+  ep_lambda_role                 = module.iam.ep_lambda_execution_role_name
+  crp_lambda_role                = module.iam.crp_lambda_execution_role_name
   stepfunction_role              = module.iam.stepfunction_role_name
 
   depends_on = [module.automation_document, module.code_s3_objects]

@@ -18,7 +18,8 @@ resource "aws_cloudformation_stack" "this" {
     ApplicationName             = var.application_name
     EventBridgeStepFunctionRole = var.event_bridge_stepfunction_role
     EventBridgeLambdaRole       = var.event_bridge_lambda_role
-    LambdaRole                  = var.lambda_role
+    EPLambdaRole                = var.ep_lambda_role
+    CRPLambdaRole               = var.crp_lambda_role
     StepFunctionRole            = var.stepfunction_role
   }
   template_body = file("${path.module}/cfn/serverless_code_template.yml")

@@ -4,35 +4,6 @@ locals {
 
 data "aws_caller_identity" "current" {}
 
-data "aws_iam_policy_document" "operations_assume_role" {
-  statement {
-    actions = ["sts:AssumeRoleWithSAML"]
-
-    principals {
-      type        = "Federated"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:saml-provider/customer-saml"]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "SAML:aud"
-
-      values = [
-        "https://signin.aws.amazon.com/saml"
-      ]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "operations_inline" {
-  statement {
-    sid     = "OperationsInlinePolicy"
-    actions = ["lambda:invokeFunction"]
-    resources = [
-      "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function/event_publisher*"
-    ]
-  }
-}
-
 data "aws_iam_policy_document" "eventbridge_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -82,7 +53,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_execution_inline" {
+data "aws_iam_policy_document" "ep_lambda_execution_inline" {
   statement {
     sid     = "1"
     actions = ["events:PutEvents"]
@@ -90,6 +61,9 @@ data "aws_iam_policy_document" "lambda_execution_inline" {
       "arn:aws:events:${var.region}:${data.aws_caller_identity.current.account_id}:event-bus/${var.application_name}-EventBus-*"
     ]
   }
+}
+
+data "aws_iam_policy_document" "crp_lambda_execution_inline" {
   statement {
     sid     = "2"
     actions = ["cloudwatch:GetMetricData"]

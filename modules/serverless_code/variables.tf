@@ -25,9 +25,14 @@ variable "event_bridge_stepfunction_role" {
   description = "The name of the EventBridge Role that initiates StepFunctions"
 }
 
-variable "lambda_role" {
+variable "ep_lambda_role" {
   type        = string
-  description = "The name of the Lambda Role that describes AutoScaling"
+  description = "The role name for the Lmabda function that Places events on EventBridge"
+}
+
+variable "crp_lambda_role" {
+  type        = string
+  description = "The role name for the Lmabda function that calculates the execution plan"
 }
 
 variable "stepfunction_role" {

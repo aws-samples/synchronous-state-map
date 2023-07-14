@@ -1,19 +1,3 @@
-
-resource "aws_iam_role" "operations" {
-  name               = "${local.application_name}-Operations"
-  path               = "/"
-  assume_role_policy = data.aws_iam_policy_document.operations_assume_role.json
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess",
-    "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess",
-    "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
-  ]
-  inline_policy {
-    name   = "${local.application_name}-Operations-Invoke-Lambda"
-    policy = data.aws_iam_policy_document.operations_inline.json
-  }
-}
-
 resource "aws_iam_role" "eventbridge_lambda" {
   name               = "${local.application_name}-EventBridge-Lambda-Role"
   path               = "/"
@@ -34,16 +18,29 @@ resource "aws_iam_role" "eventbridge_stepfunction" {
   }
 }
 
-resource "aws_iam_role" "lambda_execution" {
-  name               = "${local.application_name}-Lambda-Execution-Role"
+resource "aws_iam_role" "event_publisher_lambda_execution" {
+  name               = "${local.application_name}-EP-Lambda-Execution-Role"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   ]
   inline_policy {
-    name   = "${local.application_name}-Lambdas-Execution-Policy"
-    policy = data.aws_iam_policy_document.lambda_execution_inline.json
+    name   = "${local.application_name}-EP-Lambdas-Execution-Policy"
+    policy = data.aws_iam_policy_document.ep_lambda_execution_inline.json
+  }
+}
+
+resource "aws_iam_role" "calculate_restart_plan_lambda_execution" {
+  name               = "${local.application_name}-CRP-Lambda-Execution-Role"
+  path               = "/"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  ]
+  inline_policy {
+    name   = "${local.application_name}-CRP-Lambdas-Execution-Policy"
+    policy = data.aws_iam_policy_document.crp_lambda_execution_inline.json
   }
 }
 

@@ -19,9 +19,12 @@ Parameters:
   EventBridgeLambdaRole:
     Type: String
     Description: The name of the EventBridge Role that initiates StepFunctions
-  LambdaRole:
+  EPLambdaRole:
     Type: String
-    Description: The name of the Lambda Role that describes AutoScaling
+    Description: The role name for the Lmabda function that Places events on EventBridge
+  CRPLambdaRole:
+    Type: String
+    Description: The role name for the Lmabda function that calculates the execution plan
   StepFunctionRole:
     Type: String
     Description: The name of the StepFunction Role
@@ -86,7 +89,7 @@ Resources:
       FunctionName: !Sub "event_publisher_${Environment}"
       Handler: index.lambda_handler
       MemorySize: 128
-      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${LambdaRole}"
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${EPLambdaRole}"
       Runtime: python3.9
       Timeout: 300
 
@@ -129,7 +132,7 @@ Resources:
       FunctionName: !Sub "calculate_restart_plan_${Environment}"
       Handler: index.lambda_handler
       MemorySize: 128
-      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${LambdaRole}"
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${CRPLambdaRole}"
       Runtime: python3.9
       Timeout: 300
 
@@ -151,3 +154,4 @@ Resources:
       Subscription:
         - Endpoint: !Ref SnsEmail
           Protocol: "email"
+      KmsMasterKeyId: alias/aws/sns
