@@ -45,3 +45,8 @@ variable "sns_email" {
   type        = string
   description = "The SSN Notification email"
 }
+
+variable "sns_arn" {
+  type        = string
+  description = "Cloudformation notifications"
+}

@@ -18,4 +18,5 @@ resource "aws_cloudformation_stack" "this" {
   }
   template_body = file("${path.module}/cfn/run_command.yml")
   timeouts {}
+  notification_arns = [var.sns_arn]
 }

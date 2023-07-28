@@ -6,6 +6,17 @@ module "iam" {
   region           = var.region
 }
 
+resource "aws_sns_topic" "cloudformation_notications" {
+  name = "cloudformation-notications"
+  kms_master_key_id = "alias/aws/sns"
+}
+
+resource "aws_sns_topic_subscription" "this" {
+  topic_arn = aws_sns_topic.cloudformation_notications.arn
+  protocol  = "email"
+  endpoint  = var.owner_email
+}
+
 module "code_s3_objects" {
   #Creates an S3 bucket, and places Lambda code and State Machine definitions into S3 for reference
   source           = "../../modules/code-s3-objects"
@@ -22,6 +33,7 @@ module "automation_document" {
   environment      = var.environment
   application_name = var.application_name
   ssm_role         = module.iam.ssm_role_name
+  sns_arn          = aws_sns_topic.cloudformation_notications.arn
 }
 
 module "serverless_code" {
@@ -36,4 +48,5 @@ module "serverless_code" {
   ep_lambda_role                 = module.iam.ep_lambda_execution_role_name
   crp_lambda_role                = module.iam.crp_lambda_execution_role_name
   stepfunction_role              = module.iam.stepfunction_role_name
+  sns_arn                        = aws_sns_topic.cloudformation_notications.arn
 }

@@ -13,3 +13,7 @@ data "archive_file" "event_publisher" {
   output_file_mode = "0666"
   output_path      = "${path.module}/event-publisher.zip"
 }
+
+data "aws_kms_key" "s3" {
+  key_id = "alias/aws/s3"
+}

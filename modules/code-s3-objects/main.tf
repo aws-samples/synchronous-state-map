@@ -6,17 +6,25 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   bucket = aws_s3_bucket.this.bucket
   rule {
     apply_server_side_encryption_by_default {
+      kms_master_key_id = data.aws_kms_key.s3.arn
       sse_algorithm = "aws:kms"
     }
   }
 }
 
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.this.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 resource "aws_s3_bucket_public_access_block" "this" {
   bucket                  = aws_s3_bucket.this.id
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_object" "calculate_restart_plan" {
@@ -24,6 +32,7 @@ resource "aws_s3_bucket_object" "calculate_restart_plan" {
   key         = "${var.application_name}/${var.environment}/calculate-restart-plan.zip"
   source      = data.archive_file.calculate_restart_plan.output_path
   source_hash = filemd5("${path.module}/lambdas/calculate_restart_plan/index.py")
+  kms_key_id  = data.aws_kms_key.s3.arn
 }
 
 resource "aws_s3_bucket_object" "event_publisher" {
@@ -31,6 +40,7 @@ resource "aws_s3_bucket_object" "event_publisher" {
   key         = "${var.application_name}/${var.environment}/event-publisher.zip"
   source      = data.archive_file.event_publisher.output_path
   source_hash = filemd5("${path.module}/lambdas/event_publisher/index.py")
+  kms_key_id  = data.aws_kms_key.s3.arn
 }
 
 resource "aws_s3_bucket_object" "autoscaling_state_machine" {
@@ -46,4 +56,5 @@ resource "aws_s3_bucket_object" "autoscaling_state_machine" {
     }
   )
   source_hash = filemd5("${path.module}/state-machine/autoscaling_state_machine.template")
+  kms_key_id  = data.aws_kms_key.s3.arn
 }

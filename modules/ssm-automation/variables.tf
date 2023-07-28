@@ -14,3 +14,8 @@ variable "application_name" {
   type        = string
   description = "The environment being deployed against"
 }
+
+variable "sns_arn" {
+  type        = string
+  description = "Cloudformation notifications"
+}

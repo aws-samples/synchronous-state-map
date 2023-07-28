@@ -24,4 +24,5 @@ resource "aws_cloudformation_stack" "this" {
   }
   template_body = file("${path.module}/cfn/serverless_code_template.yml")
   timeouts {}
+  notification_arns = [var.sns_arn]
 }
